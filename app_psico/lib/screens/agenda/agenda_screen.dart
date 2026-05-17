@@ -407,7 +407,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                                       Text(
                                         c.status ==
                                                 StatusConsulta.realizada
-                                            ? 'Evolução registrada — adicionar outra'
+                                            ? 'Consulta realizada — adicionar evolução'
                                             : 'Registrar evolução',
                                         style: TextStyle(
                                           fontSize: 13,

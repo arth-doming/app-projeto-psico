@@ -91,12 +91,20 @@ class _PacientesScreenState extends State<PacientesScreen> {
                                   fontWeight: FontWeight.w600)),
                           subtitle: Text('${p.idade} anos • ${p.telefone}'),
                           trailing: const Icon(Icons.chevron_right),
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
+                          onTap: () async {
+                            final resultado = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
                                 builder: (_) =>
-                                    PacienteDetalheScreen(paciente: p)),
-                          ),
+                                    PacienteDetalheScreen(paciente: p),
+                              ),
+                            );
+                            if (resultado == 'deletado') {
+                              setState(() {
+                                _pacientes.removeWhere((x) => x.id == p.id);
+                              });
+                            }
+                          },
                         ),
                       );
                     },
@@ -109,9 +117,12 @@ class _PacientesScreenState extends State<PacientesScreen> {
           final novo = await Navigator.push<Paciente>(
             context,
             MaterialPageRoute(
-              builder: (_) => const PacienteFormScreen()),
+              builder: (_) => PacienteFormScreen(),
+            ),
           );
-          if (novo != null) setState(() => _pacientes.add(novo));
+          if (novo != null) {
+            setState(() => _pacientes.add(novo));
+          }
         },
         child: const Icon(Icons.person_add),
       ),
