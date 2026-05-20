@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "337083321447",
+    "project_id": "app-psico-77804",
+    "storage_bucket": "app-psico-77804.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337083321447:android:32cb54a6778565ccbf98c2",
+        "android_client_info": {
+          "package_name": "com.example.app_psico"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCX8n-DG4Cy8sJ9T2_d2Ni-orxpk20H6CY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
