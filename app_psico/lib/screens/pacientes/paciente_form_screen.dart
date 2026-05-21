@@ -2,40 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/paciente.dart';
 import '../../services/paciente_service.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class PacienteFormScreen extends StatefulWidget {
   final Paciente? paciente;
-  const PacienteFormScreen({super.key, this.paciente});
+
+  const PacienteFormScreen({
+    super.key,
+    this.paciente,
+  });
 
   @override
-  State<PacienteFormScreen> createState() => _PacienteFormScreenState();
+  State<PacienteFormScreen> createState() =>
+      _PacienteFormScreenState();
 }
 
-class _PacienteFormScreenState extends State<PacienteFormScreen> {
+class _PacienteFormScreenState
+    extends State<PacienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
+
   late final TextEditingController _nomeController;
   late final TextEditingController _telefoneController;
   late final TextEditingController _cpfController;
   late final TextEditingController _emailController;
   late final TextEditingController _observacoesController;
+
   DateTime? _dataNascimento;
   bool _salvando = false;
 
   bool get _editando => widget.paciente != null;
 
+  final _cpfFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {
+      '#': RegExp(r'[0-9]'),
+    },
+  );
+
   @override
   void initState() {
     super.initState();
-    _nomeController =
-        TextEditingController(text: widget.paciente?.nome ?? '');
-    _telefoneController =
-        TextEditingController(text: widget.paciente?.telefone ?? '');
-    _cpfController =
-        TextEditingController(text: widget.paciente?.cpf ?? '');
-    _emailController =
-        TextEditingController(text: widget.paciente?.email ?? '');
-    _observacoesController =
-        TextEditingController(text: widget.paciente?.observacoes ?? '');
+
+    _nomeController = TextEditingController(
+      text: widget.paciente?.nome ?? '',
+    );
+
+    _telefoneController = TextEditingController(
+      text: widget.paciente?.telefone ?? '',
+    );
+
+    _cpfController = TextEditingController(
+      text: widget.paciente?.cpf ?? '',
+    );
+
+    _emailController = TextEditingController(
+      text: widget.paciente?.email ?? '',
+    );
+
+    _observacoesController = TextEditingController(
+      text: widget.paciente?.observacoes ?? '',
+    );
+
     _dataNascimento = widget.paciente?.dataNascimento;
   }
 
@@ -46,6 +73,7 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
     _cpfController.dispose();
     _emailController.dispose();
     _observacoesController.dispose();
+
     super.dispose();
   }
 
@@ -57,37 +85,59 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
       lastDate: DateTime.now(),
       locale: const Locale('pt', 'BR'),
     );
-    if (picked != null) setState(() => _dataNascimento = picked);
+
+    if (picked != null) {
+      setState(() => _dataNascimento = picked);
+    }
   }
 
   Future<void> _salvar() async {
     if (!_formKey.currentState!.validate()) return;
+
     if (_dataNascimento == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecione a data de nascimento')),
+        const SnackBar(
+          content: Text(
+            'Selecione a data de nascimento',
+          ),
+        ),
       );
+
       return;
     }
+
     setState(() => _salvando = true);
+
     final paciente = Paciente(
       id: widget.paciente?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
+          DateTime.now()
+              .millisecondsSinceEpoch
+              .toString(),
       nome: _nomeController.text.trim(),
       telefone: _telefoneController.text.trim(),
       cpf: _cpfController.text.trim(),
       email: _emailController.text.trim(),
       dataNascimento: _dataNascimento!,
-      observacoes: _observacoesController.text.trim(),
+      observacoes:
+          _observacoesController.text.trim(),
     );
+
     await PacienteService.salvar(paciente);
-    if (mounted) Navigator.pop(context);
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_editando ? 'Editar paciente' : 'Novo paciente'),
+        title: Text(
+          _editando
+              ? 'Editar paciente'
+              : 'Novo paciente',
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -98,109 +148,202 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
               child: CircleAvatar(
                 radius: 38,
                 backgroundColor:
-                    const Color(0xFF7C6FCD).withOpacity(0.15),
+                    const Color(0xFF7C6FCD)
+                        .withOpacity(0.15),
                 child: _editando
                     ? Text(
                         widget.paciente!.iniciais,
                         style: const TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF7C6FCD)),
+                          fontSize: 26,
+                          fontWeight:
+                              FontWeight.bold,
+                          color:
+                              Color(0xFF7C6FCD),
+                        ),
                       )
-                    : const Icon(Icons.person,
-                        size: 40, color: Color(0xFF7C6FCD)),
+                    : const Icon(
+                        Icons.person,
+                        size: 40,
+                        color:
+                            Color(0xFF7C6FCD),
+                      ),
               ),
             ),
+
             const SizedBox(height: 28),
+
             _campo(
               controller: _nomeController,
               label: 'Nome completo',
               icon: Icons.person_outline,
               validator: (v) =>
-                  v!.trim().isEmpty ? 'Informe o nome' : null,
+                  v!.trim().isEmpty
+                      ? 'Informe o nome'
+                      : null,
             ),
+
             const SizedBox(height: 16),
+
             _campo(
               controller: _telefoneController,
               label: 'Telefone',
               icon: Icons.phone_outlined,
               tipo: TextInputType.phone,
               validator: (v) =>
-                  v!.trim().isEmpty ? 'Informe o telefone' : null,
+                  v!.trim().isEmpty
+                      ? 'Informe o telefone'
+                      : null,
             ),
+
             const SizedBox(height: 16),
-            _campo(
+
+            TextFormField(
               controller: _cpfController,
-              label: 'CPF',
-              icon: Icons.badge_outlined,
-              tipo: TextInputType.number,
+              keyboardType:
+                  TextInputType.number,
+              inputFormatters: [
+                _cpfFormatter,
+              ],
+              decoration: InputDecoration(
+                labelText: 'CPF',
+                prefixIcon: const Icon(
+                  Icons.badge_outlined,
+                  color: Color(0xFF7C6FCD),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(12),
+                ),
+                focusedBorder:
+                    OutlineInputBorder(
+                  borderRadius:
+                      BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(
+                    color:
+                        Color(0xFF7C6FCD),
+                    width: 2,
+                  ),
+                ),
+              ),
             ),
+
             const SizedBox(height: 16),
+
             _campo(
               controller: _emailController,
               label: 'E-mail',
               icon: Icons.email_outlined,
-              tipo: TextInputType.emailAddress,
+              tipo:
+                  TextInputType.emailAddress,
               validator: (v) =>
-                  v!.trim().isEmpty ? 'Informe o e-mail' : null,
+                  v!.trim().isEmpty
+                      ? 'Informe o e-mail'
+                      : null,
             ),
+
             const SizedBox(height: 16),
+
             GestureDetector(
               onTap: _selecionarData,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[400]!),
-                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.grey[400]!,
+                  ),
+                  borderRadius:
+                      BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.cake_outlined,
-                        color: Color(0xFF7C6FCD)),
+                    const Icon(
+                      Icons.cake_outlined,
+                      color:
+                          Color(0xFF7C6FCD),
+                    ),
+
                     const SizedBox(width: 12),
+
                     Text(
                       _dataNascimento == null
                           ? 'Data de nascimento'
-                          : DateFormat("d 'de' MMMM 'de' yyyy", 'pt_BR')
-                              .format(_dataNascimento!),
+                          : DateFormat(
+                              "d 'de' MMMM 'de' yyyy",
+                              'pt_BR',
+                            ).format(
+                              _dataNascimento!,
+                            ),
                       style: TextStyle(
                         fontSize: 16,
-                        color: _dataNascimento == null
-                            ? Colors.grey[600]
-                            : Colors.black87,
+                        color:
+                            _dataNascimento ==
+                                    null
+                                ? Colors
+                                    .grey[600]
+                                : Colors.black87,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 16),
+
             _campo(
-              controller: _observacoesController,
-              label: 'Observações (opcional)',
+              controller:
+                  _observacoesController,
+              label:
+                  'Observações (opcional)',
               icon: Icons.notes_outlined,
               maxLinhas: 4,
             ),
+
             const SizedBox(height: 32),
+
             ElevatedButton(
-              onPressed: _salvando ? null : _salvar,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7C6FCD),
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(52),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+              onPressed:
+                  _salvando ? null : _salvar,
+              style:
+                  ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color(0xFF7C6FCD),
+                foregroundColor:
+                    Colors.white,
+                minimumSize:
+                    const Size.fromHeight(52),
+                shape:
+                    RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(
+                    14,
+                  ),
+                ),
               ),
               child: _salvando
                   ? const SizedBox(
                       width: 22,
                       height: 22,
-                      child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2))
+                      child:
+                          CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : Text(
-                      _editando ? 'Salvar alterações' : 'Cadastrar paciente',
-                      style: const TextStyle(fontSize: 16)),
+                      _editando
+                          ? 'Salvar alterações'
+                          : 'Cadastrar paciente',
+                      style:
+                          const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -209,11 +352,14 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
   }
 
   Widget _campo({
-    required TextEditingController controller,
+    required TextEditingController
+        controller,
     required String label,
     required IconData icon,
-    TextInputType tipo = TextInputType.text,
-    String? Function(String?)? validator,
+    TextInputType tipo =
+        TextInputType.text,
+    String? Function(String?)?
+        validator,
     int maxLinhas = 1,
   }) {
     return TextFormField(
@@ -223,13 +369,22 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: const Color(0xFF7C6FCD)),
+        prefixIcon: Icon(
+          icon,
+          color: const Color(0xFF7C6FCD),
+        ),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12)),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: Color(0xFF7C6FCD), width: 2),
+          borderRadius:
+              BorderRadius.circular(12),
+        ),
+        focusedBorder:
+            OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color(0xFF7C6FCD),
+            width: 2,
+          ),
         ),
       ),
     );

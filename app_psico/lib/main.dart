@@ -8,6 +8,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/home/inicio_screen.dart';
 import 'screens/agenda/agenda_screen.dart';
 import 'screens/pacientes/pacientes_screen.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FlutterNativeSplash.remove();
   runApp(const AppPsico());
 }
 

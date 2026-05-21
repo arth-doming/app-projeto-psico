@@ -26,10 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _entrar() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
-      _carregando = true;
-      _erro = null;
-    });
+    setState(() { _carregando = true; _erro = null; });
     try {
       if (_modoCadastro) {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -46,6 +43,35 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _erro = _mensagemErro(e.code));
     } finally {
       setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _recuperarSenha() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      setState(() => _erro = 'Digite seu e-mail para recuperar a senha.');
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('E-mail enviado'),
+            content: Text(
+                'Um link para redefinir sua senha foi enviado para $email.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => _erro = _mensagemErro(e.code));
     }
   }
 
@@ -126,9 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       : null,
                   decoration: InputDecoration(
                     labelText: 'E-mail',
-                    prefixIcon:
-                        const Icon(Icons.email_outlined,
-                            color: Color(0xFF7C6FCD)),
+                    prefixIcon: const Icon(Icons.email_outlined,
+                        color: Color(0xFF7C6FCD)),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14)),
                     focusedBorder: OutlineInputBorder(
@@ -151,14 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       : null,
                   decoration: InputDecoration(
                     labelText: 'Senha',
-                    prefixIcon:
-                        const Icon(Icons.lock_outlined,
-                            color: Color(0xFF7C6FCD)),
+                    prefixIcon: const Icon(Icons.lock_outlined,
+                        color: Color(0xFF7C6FCD)),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _verSenha
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        _verSenha ? Icons.visibility_off : Icons.visibility,
                         color: Colors.grey,
                       ),
                       onPressed: () =>
@@ -176,9 +198,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
+                // Esqueci minha senha
+                if (!_modoCadastro)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _recuperarSenha,
+                      child: const Text(
+                        'Esqueci minha senha',
+                        style: TextStyle(
+                            color: Color(0xFF7C6FCD), fontSize: 13),
+                      ),
+                    ),
+                  ),
+
                 // Erro
                 if (_erro != null) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

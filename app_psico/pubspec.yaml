@@ -19,14 +19,29 @@ dependencies:
   cloud_firestore: ^6.4.1
   pdf: ^3.12.0
   printing: ^5.14.3
+  mask_text_input_formatter: ^2.9.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  remove_alpha_ios: true
+  background_color_ios: "#ffffff"
+
+flutter_native_splash:
+  color: "#F6F4FF"
+  image: assets/images/logo.png
+  android: true
+  ios: true
+
 flutter:
   uses-material-design: true
-
   assets:
     - assets/images/logo.png
