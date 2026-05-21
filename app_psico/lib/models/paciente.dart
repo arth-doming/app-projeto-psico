@@ -5,6 +5,7 @@ class Paciente {
   final String email;
   final DateTime dataNascimento;
   final String observacoes;
+  final String cpf; // ← novo campo
 
   Paciente({
     required this.id,
@@ -13,6 +14,7 @@ class Paciente {
     required this.email,
     required this.dataNascimento,
     this.observacoes = '',
+    this.cpf = '', // ← novo campo
   });
 
   int get idade {

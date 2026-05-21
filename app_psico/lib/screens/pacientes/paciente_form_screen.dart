@@ -15,6 +15,7 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nomeController;
   late final TextEditingController _telefoneController;
+  late final TextEditingController _cpfController;
   late final TextEditingController _emailController;
   late final TextEditingController _observacoesController;
   DateTime? _dataNascimento;
@@ -25,10 +26,16 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
   @override
   void initState() {
     super.initState();
-    _nomeController = TextEditingController(text: widget.paciente?.nome ?? '');
-    _telefoneController = TextEditingController(text: widget.paciente?.telefone ?? '');
-    _emailController = TextEditingController(text: widget.paciente?.email ?? '');
-    _observacoesController = TextEditingController(text: widget.paciente?.observacoes ?? '');
+    _nomeController =
+        TextEditingController(text: widget.paciente?.nome ?? '');
+    _telefoneController =
+        TextEditingController(text: widget.paciente?.telefone ?? '');
+    _cpfController =
+        TextEditingController(text: widget.paciente?.cpf ?? '');
+    _emailController =
+        TextEditingController(text: widget.paciente?.email ?? '');
+    _observacoesController =
+        TextEditingController(text: widget.paciente?.observacoes ?? '');
     _dataNascimento = widget.paciente?.dataNascimento;
   }
 
@@ -36,6 +43,7 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
   void dispose() {
     _nomeController.dispose();
     _telefoneController.dispose();
+    _cpfController.dispose();
     _emailController.dispose();
     _observacoesController.dispose();
     super.dispose();
@@ -66,6 +74,7 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
           DateTime.now().millisecondsSinceEpoch.toString(),
       nome: _nomeController.text.trim(),
       telefone: _telefoneController.text.trim(),
+      cpf: _cpfController.text.trim(),
       email: _emailController.text.trim(),
       dataNascimento: _dataNascimento!,
       observacoes: _observacoesController.text.trim(),
@@ -88,41 +97,67 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
             Center(
               child: CircleAvatar(
                 radius: 38,
-                backgroundColor: const Color(0xFF7C6FCD).withOpacity(0.15),
+                backgroundColor:
+                    const Color(0xFF7C6FCD).withOpacity(0.15),
                 child: _editando
-                    ? Text(widget.paciente!.iniciais,
+                    ? Text(
+                        widget.paciente!.iniciais,
                         style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF7C6FCD)))
+                            color: Color(0xFF7C6FCD)),
+                      )
                     : const Icon(Icons.person,
                         size: 40, color: Color(0xFF7C6FCD)),
               ),
             ),
             const SizedBox(height: 28),
-            _campo(controller: _nomeController, label: 'Nome completo',
-                icon: Icons.person_outline,
-                validator: (v) => v!.trim().isEmpty ? 'Informe o nome' : null),
+            _campo(
+              controller: _nomeController,
+              label: 'Nome completo',
+              icon: Icons.person_outline,
+              validator: (v) =>
+                  v!.trim().isEmpty ? 'Informe o nome' : null,
+            ),
             const SizedBox(height: 16),
-            _campo(controller: _telefoneController, label: 'Telefone',
-                icon: Icons.phone_outlined, tipo: TextInputType.phone,
-                validator: (v) => v!.trim().isEmpty ? 'Informe o telefone' : null),
+            _campo(
+              controller: _telefoneController,
+              label: 'Telefone',
+              icon: Icons.phone_outlined,
+              tipo: TextInputType.phone,
+              validator: (v) =>
+                  v!.trim().isEmpty ? 'Informe o telefone' : null,
+            ),
             const SizedBox(height: 16),
-            _campo(controller: _emailController, label: 'E-mail',
-                icon: Icons.email_outlined, tipo: TextInputType.emailAddress,
-                validator: (v) => v!.trim().isEmpty ? 'Informe o e-mail' : null),
+            _campo(
+              controller: _cpfController,
+              label: 'CPF',
+              icon: Icons.badge_outlined,
+              tipo: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            _campo(
+              controller: _emailController,
+              label: 'E-mail',
+              icon: Icons.email_outlined,
+              tipo: TextInputType.emailAddress,
+              validator: (v) =>
+                  v!.trim().isEmpty ? 'Informe o e-mail' : null,
+            ),
             const SizedBox(height: 16),
             GestureDetector(
               onTap: _selecionarData,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey[400]!),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.cake_outlined, color: Color(0xFF7C6FCD)),
+                    const Icon(Icons.cake_outlined,
+                        color: Color(0xFF7C6FCD)),
                     const SizedBox(width: 12),
                     Text(
                       _dataNascimento == null
@@ -130,19 +165,23 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
                           : DateFormat("d 'de' MMMM 'de' yyyy", 'pt_BR')
                               .format(_dataNascimento!),
                       style: TextStyle(
-                          fontSize: 16,
-                          color: _dataNascimento == null
-                              ? Colors.grey[600]
-                              : Colors.black87),
+                        fontSize: 16,
+                        color: _dataNascimento == null
+                            ? Colors.grey[600]
+                            : Colors.black87,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            _campo(controller: _observacoesController,
-                label: 'Observações (opcional)',
-                icon: Icons.notes_outlined, maxLinhas: 4),
+            _campo(
+              controller: _observacoesController,
+              label: 'Observações (opcional)',
+              icon: Icons.notes_outlined,
+              maxLinhas: 4,
+            ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _salvando ? null : _salvar,
@@ -154,9 +193,13 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
                     borderRadius: BorderRadius.circular(14)),
               ),
               child: _salvando
-                  ? const SizedBox(width: 22, height: 22,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : Text(_editando ? 'Salvar alterações' : 'Cadastrar paciente',
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : Text(
+                      _editando ? 'Salvar alterações' : 'Cadastrar paciente',
                       style: const TextStyle(fontSize: 16)),
             ),
           ],
@@ -165,9 +208,14 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
     );
   }
 
-  Widget _campo({required TextEditingController controller, required String label,
-      required IconData icon, TextInputType tipo = TextInputType.text,
-      String? Function(String?)? validator, int maxLinhas = 1}) {
+  Widget _campo({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType tipo = TextInputType.text,
+    String? Function(String?)? validator,
+    int maxLinhas = 1,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: tipo,
@@ -176,10 +224,12 @@ class _PacienteFormScreenState extends State<PacienteFormScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: const Color(0xFF7C6FCD)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF7C6FCD), width: 2),
+          borderSide:
+              const BorderSide(color: Color(0xFF7C6FCD), width: 2),
         ),
       ),
     );

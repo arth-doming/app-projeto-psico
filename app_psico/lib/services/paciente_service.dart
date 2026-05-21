@@ -8,13 +8,11 @@ class PacienteService {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('pacientes');
 
-  // Buscar todos
   static Stream<List<Paciente>> listar() {
     return _col.orderBy('nome').snapshots().map((snap) =>
         snap.docs.map((d) => _fromDoc(d)).toList());
   }
 
-  // Salvar novo
   static Future<void> salvar(Paciente p) async {
     await _col.doc(p.id).set({
       'nome': p.nome,
@@ -22,10 +20,10 @@ class PacienteService {
       'email': p.email,
       'dataNascimento': p.dataNascimento.toIso8601String(),
       'observacoes': p.observacoes,
+      'cpf': p.cpf, // ← novo campo
     });
   }
 
-  // Deletar
   static Future<void> deletar(String id) async {
     await _col.doc(id).delete();
   }
@@ -39,6 +37,7 @@ class PacienteService {
       email: data['email'] ?? '',
       dataNascimento: DateTime.parse(data['dataNascimento']),
       observacoes: data['observacoes'] ?? '',
+      cpf: data['cpf'] ?? '', // ← novo campo
     );
   }
 }
