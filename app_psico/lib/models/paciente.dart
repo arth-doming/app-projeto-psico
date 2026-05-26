@@ -5,7 +5,9 @@ class Paciente {
   final String email;
   final DateTime dataNascimento;
   final String observacoes;
-  final String cpf; // ← novo campo
+  final String cpf;
+  final String endereco;
+  final String sexo;
 
   Paciente({
     required this.id,
@@ -14,14 +16,17 @@ class Paciente {
     required this.email,
     required this.dataNascimento,
     this.observacoes = '',
-    this.cpf = '', // ← novo campo
+    this.cpf = '',
+    this.endereco = '',
+    this.sexo = '',
   });
 
   int get idade {
     final hoje = DateTime.now();
     int anos = hoje.year - dataNascimento.year;
     if (hoje.month < dataNascimento.month ||
-        (hoje.month == dataNascimento.month && hoje.day < dataNascimento.day)) {
+        (hoje.month == dataNascimento.month &&
+            hoje.day < dataNascimento.day)) {
       anos--;
     }
     return anos;

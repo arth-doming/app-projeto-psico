@@ -20,7 +20,9 @@ class PacienteService {
       'email': p.email,
       'dataNascimento': p.dataNascimento.toIso8601String(),
       'observacoes': p.observacoes,
-      'cpf': p.cpf, // ← novo campo
+      'cpf': p.cpf,
+      'endereco': p.endereco,
+      'sexo': p.sexo,
     });
   }
 
@@ -37,7 +39,9 @@ class PacienteService {
       email: data['email'] ?? '',
       dataNascimento: DateTime.parse(data['dataNascimento']),
       observacoes: data['observacoes'] ?? '',
-      cpf: data['cpf'] ?? '', // ← novo campo
+      cpf: data['cpf'] ?? '',
+      endereco: data['endereco'] ?? '',
+      sexo: data['sexo'] ?? '',
     );
   }
 }

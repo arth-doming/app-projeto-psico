@@ -40,6 +40,7 @@ class _PacienteDetalheScreenState
         ),
       ),
     );
+    if (mounted) Navigator.pop(context);
   }
 
   void _deletarPaciente() {
@@ -494,6 +495,10 @@ class _PacienteDetalheScreenState
                   _paciente.dataNascimento,
                 ),
               ),
+              if (_paciente.sexo.isNotEmpty)
+                _infoTile(Icons.wc_outlined, 'Sexo', _paciente.sexo),
+              if (_paciente.endereco.isNotEmpty)
+                _infoTile(Icons.location_on_outlined, 'Endereço', _paciente.endereco),
 
               if (_paciente
                   .observacoes
