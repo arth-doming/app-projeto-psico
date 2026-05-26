@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/anamnese.dart';
 import '../../models/evolucao.dart';
 import '../../models/paciente.dart';
+
+import '../../services/anamnese_service.dart';
 import '../../services/evolucao_service.dart';
 import '../../services/paciente_service.dart';
 import '../../services/pdf_service.dart';
+
+import 'anamnese_screen.dart';
 import 'paciente_form_screen.dart';
 
 class PacienteDetalheScreen extends StatefulWidget {
@@ -24,11 +29,23 @@ class PacienteDetalheScreen extends StatefulWidget {
 class _PacienteDetalheScreenState
     extends State<PacienteDetalheScreen> {
   late Paciente _paciente;
+  Anamnese? _anamnese;
 
   @override
   void initState() {
     super.initState();
     _paciente = widget.paciente;
+    _carregarAnamnese();
+  }
+
+  Future<void> _carregarAnamnese() async {
+    final a = await AnamneseService.buscarPorPaciente(
+      _paciente.id,
+    );
+
+    if (mounted) {
+      setState(() => _anamnese = a);
+    }
   }
 
   void _editarPaciente() async {
@@ -40,7 +57,10 @@ class _PacienteDetalheScreenState
         ),
       ),
     );
-    if (mounted) Navigator.pop(context);
+
+    if (mounted) {
+      Navigator.pop(context);
+    }
   }
 
   void _deletarPaciente() {
@@ -73,7 +93,9 @@ class _PacienteDetalheScreenState
             },
             child: const Text(
               'Deletar',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(
+                color: Colors.red,
+              ),
             ),
           ),
         ],
@@ -98,7 +120,8 @@ class _PacienteDetalheScreenState
           right: 20,
           top: 24,
           bottom:
-              MediaQuery.of(context).viewInsets.bottom + 24,
+              MediaQuery.of(context).viewInsets.bottom +
+              24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -277,8 +300,9 @@ class _PacienteDetalheScreenState
                       color: Colors.red,
                     ),
                     onPressed: () async {
-                      await EvolucaoService
-                          .deletar(e.id);
+                      await EvolucaoService.deletar(
+                        e.id,
+                      );
 
                       if (mounted) {
                         Navigator.pop(context);
@@ -495,10 +519,20 @@ class _PacienteDetalheScreenState
                   _paciente.dataNascimento,
                 ),
               ),
+
               if (_paciente.sexo.isNotEmpty)
-                _infoTile(Icons.wc_outlined, 'Sexo', _paciente.sexo),
+                _infoTile(
+                  Icons.wc_outlined,
+                  'Sexo',
+                  _paciente.sexo,
+                ),
+
               if (_paciente.endereco.isNotEmpty)
-                _infoTile(Icons.location_on_outlined, 'Endereço', _paciente.endereco),
+                _infoTile(
+                  Icons.location_on_outlined,
+                  'Endereço',
+                  _paciente.endereco,
+                ),
 
               if (_paciente
                   .observacoes
@@ -530,6 +564,97 @@ class _PacienteDetalheScreenState
                   ),
                 ),
               ],
+
+              const SizedBox(height: 8),
+
+              const SizedBox(height: 16),
+
+              GestureDetector(
+                onTap: () async {
+                  final resultado =
+                      await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          AnamneseScreen(
+                        paciente: _paciente,
+                        anamnese: _anamnese,
+                      ),
+                    ),
+                  );
+
+                  if (resultado == true) {
+                    _carregarAnamnese();
+                  }
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: _anamnese == null
+                        ? const Color(
+                            0xFF7C6FCD,
+                          ).withOpacity(0.08)
+                        : Colors.green
+                            .withOpacity(0.08),
+                    borderRadius:
+                        BorderRadius.circular(14),
+                    border: Border.all(
+                      color: _anamnese == null
+                          ? const Color(
+                              0xFF7C6FCD,
+                            ).withOpacity(0.3)
+                          : Colors.green
+                              .withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _anamnese == null
+                            ? Icons
+                                .assignment_outlined
+                            : Icons
+                                .assignment_turned_in_outlined,
+                        color: _anamnese == null
+                            ? const Color(
+                                0xFF7C6FCD,
+                              )
+                            : Colors.green,
+                      ),
+
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: Text(
+                          _anamnese == null
+                              ? 'Preencher anamnese'
+                              : 'Ver / editar anamnese',
+                          style: TextStyle(
+                            fontWeight:
+                                FontWeight.w600,
+                            color: _anamnese ==
+                                    null
+                                ? const Color(
+                                    0xFF7C6FCD,
+                                  )
+                                : Colors.green,
+                          ),
+                        ),
+                      ),
+
+                      Icon(
+                        Icons.chevron_right,
+                        color: _anamnese == null
+                            ? const Color(
+                                0xFF7C6FCD,
+                              )
+                            : Colors.green,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 8),
 
@@ -596,8 +721,9 @@ class _PacienteDetalheScreenState
                   ),
                 )
               else
-                ...evolucoes
-                    .map((e) => _evolucaoCard(e)),
+                ...evolucoes.map(
+                  (e) => _evolucaoCard(e),
+                ),
 
               const SizedBox(height: 80),
             ],
