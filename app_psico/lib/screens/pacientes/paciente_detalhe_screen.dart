@@ -569,92 +569,99 @@ class _PacienteDetalheScreenState
 
               const SizedBox(height: 16),
 
-              GestureDetector(
-                onTap: () async {
-                  final resultado =
-                      await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          AnamneseScreen(
-                        paciente: _paciente,
-                        anamnese: _anamnese,
-                      ),
-                    ),
-                  );
-
-                  if (resultado == true) {
-                    _carregarAnamnese();
-                  }
-                },
-                child: Container(
-                  padding:
-                      const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
+              Row(
+  children: [
+    Expanded(
+      child: GestureDetector(
+        onTap: () async {
+          final resultado =
+              await Navigator.push<bool>(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AnamneseScreen(
+                paciente: _paciente,
+                anamnese: _anamnese,
+              ),
+            ),
+          );
+          if (resultado == true) {
+            _carregarAnamnese();
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: _anamnese == null
+                ? const Color(0xFF7C6FCD).withOpacity(0.08)
+                : Colors.green.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: _anamnese == null
+                  ? const Color(0xFF7C6FCD).withOpacity(0.3)
+                  : Colors.green.withOpacity(0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _anamnese == null
+                    ? Icons.assignment_outlined
+                    : Icons.assignment_turned_in_outlined,
+                color: _anamnese == null
+                    ? const Color(0xFF7C6FCD)
+                    : Colors.green,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _anamnese == null
+                      ? 'Preencher anamnese'
+                      : 'Ver / editar anamnese',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
                     color: _anamnese == null
-                        ? const Color(
-                            0xFF7C6FCD,
-                          ).withOpacity(0.08)
-                        : Colors.green
-                            .withOpacity(0.08),
-                    borderRadius:
-                        BorderRadius.circular(14),
-                    border: Border.all(
-                      color: _anamnese == null
-                          ? const Color(
-                              0xFF7C6FCD,
-                            ).withOpacity(0.3)
-                          : Colors.green
-                              .withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        _anamnese == null
-                            ? Icons
-                                .assignment_outlined
-                            : Icons
-                                .assignment_turned_in_outlined,
-                        color: _anamnese == null
-                            ? const Color(
-                                0xFF7C6FCD,
-                              )
-                            : Colors.green,
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      Expanded(
-                        child: Text(
-                          _anamnese == null
-                              ? 'Preencher anamnese'
-                              : 'Ver / editar anamnese',
-                          style: TextStyle(
-                            fontWeight:
-                                FontWeight.w600,
-                            color: _anamnese ==
-                                    null
-                                ? const Color(
-                                    0xFF7C6FCD,
-                                  )
-                                : Colors.green,
-                          ),
-                        ),
-                      ),
-
-                      Icon(
-                        Icons.chevron_right,
-                        color: _anamnese == null
-                            ? const Color(
-                                0xFF7C6FCD,
-                              )
-                            : Colors.green,
-                      ),
-                    ],
+                        ? const Color(0xFF7C6FCD)
+                        : Colors.green,
                   ),
                 ),
               ),
+              Icon(
+                Icons.chevron_right,
+                color: _anamnese == null
+                    ? const Color(0xFF7C6FCD)
+                    : Colors.green,
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    if (_anamnese != null) ...[
+      const SizedBox(width: 8),
+      GestureDetector(
+        onTap: () async {
+          await PdfService.exportarAnamnese(
+            paciente: _paciente,
+            anamnese: _anamnese!,
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.green.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+                color: Colors.green.withOpacity(0.3)),
+          ),
+          child: const Icon(
+            Icons.picture_as_pdf_outlined,
+            color: Colors.green,
+          ),
+        ),
+      ),
+    ],
+  ],
+),
 
               const SizedBox(height: 8),
 
